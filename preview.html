@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đề thi trắc nghiệm - Giá trị riêng & Vector riêng</title>
+
+  <!-- MathJax -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(','\\)'], ['$', '$']]
+      }
+    };
+  </script>
+
+  <script defer
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f2f5f9;
+      margin:0;
+      padding:20px;
+      line-height:1.6;
+    }
+
+    .container{
+      max-width:1100px;
+      margin:auto;
+      background:white;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h1{
+      text-align:center;
+      color:#005a9c;
+    }
+
+    .question{
+      border:2px solid #dce6f2;
+      border-radius:10px;
+      padding:20px;
+      margin-bottom:25px;
+      background:#fafcff;
+    }
+
+    .question h3{
+      color:#003f70;
+    }
+
+    .difficulty{
+      font-weight:bold;
+      margin-bottom:10px;
+    }
+
+    .easy{
+      color:green;
+    }
+
+    .medium{
+      color:orange;
+    }
+
+    .hard{
+      color:red;
+    }
+
+    .option{
+      display:block;
+      margin:10px 0;
+      padding:12px;
+      border:2px solid #cdd7e1;
+      border-radius:8px;
+      cursor:pointer;
+      transition:0.3s;
+      background:white;
+    }
+
+    .option:hover{
+      background:#eef6ff;
+    }
+
+    .correct{
+      background:#d4edda !important;
+      border-color:#28a745 !important;
+      color:#155724;
+      font-weight:bold;
+    }
+
+    .wrong{
+      background:#f8d7da !important;
+      border-color:#dc3545 !important;
+      color:#721c24;
+      font-weight:bold;
+    }
+
+    .explanation{
+      margin-top:15px;
+      padding:15px;
+      border-left:5px solid #005a9c;
+      background:#eef6ff;
+      display:none;
+      border-radius:8px;
+    }
+
+    .tip{
+      margin-top:10px;
+      background:#fff8d6;
+      padding:10px;
+      border-left:5px solid orange;
+      border-radius:8px;
+    }
+
+    .score-box{
+      position:sticky;
+      top:10px;
+      background:#005a9c;
+      color:white;
+      padding:15px;
+      border-radius:10px;
+      margin-bottom:20px;
+      text-align:center;
+      font-size:20px;
+      font-weight:bold;
+      z-index:999;
+    }
+
+    button{
+      padding:12px 20px;
+      border:none;
+      background:#005a9c;
+      color:white;
+      font-size:16px;
+      border-radius:8px;
+      cursor:pointer;
+      margin-top:20px;
+    }
+
+    button:hover{
+      background:#003f70;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>
+    ĐỀ THI TRẮC NGHIỆM TƯƠNG TÁC<br>
+    GIÁ TRỊ RIÊNG & VECTOR RIÊNG
+  </h1>
+
+  <div class="score-box">
+    Điểm hiện tại: <span id="score">0</span> / 20
+  </div>
+
+  <div id="quiz"></div>
+
+  <button onclick="resetQuiz()">Làm lại bài</button>
+
+</div>
+
+<script>
+
+const questions = [
+
+/* =========================
+   5 CÂU LÝ THUYẾT
+========================= */
+
+{
+type:"Lý thuyết",
+difficulty:"easy",
+question:"Vector riêng của ma trận A là gì?",
+options:[
+"Vector bất kỳ trong không gian",
+"Vector thỏa mãn \\(A\\vec{v}=\\lambda \\vec{v}\\)",
+"Vector có độ dài bằng 1",
+"Vector có định thức bằng 0"
+],
+correct:1,
+explanation:"Vector riêng là vector không bị đổi hướng khi ma trận tác động, chỉ bị kéo dãn hoặc co lại.",
+tip:"Thấy dạng \\(A\\vec{v}=\\lambda\\vec{v}\\) ⇒ nghĩ ngay đến eigenvector."
+},
+
+{
+type:"Lý thuyết",
+difficulty:"easy",
+question:"Phương trình đặc trưng dùng để tìm:",
+options:[
+"Vector đơn vị",
+"Ma trận nghịch đảo",
+"Giá trị riêng",
+"Định thức của A"
+],
+correct:2,
+explanation:"Giải \\(\\det(A-\\lambda I)=0\\) để tìm giá trị riêng.",
+tip:"Từ khóa 'đặc trưng' thường đi với giá trị riêng."
+},
+
+{
+type:"Lý thuyết",
+difficulty:"easy",
+question:"Nếu \\(\\lambda <0\\), vector riêng sẽ:",
+options:[
+"Không đổi",
+"Đổi chiều",
+"Bị xoay",
+"Biến mất"
+],
+correct:1,
+explanation:"Giá trị riêng âm làm vector đổi hướng ngược lại.",
+tip:"Dấu âm ⇒ đảo chiều."
+},
+
+{
+type:"Lý thuyết",
+difficulty:"medium",
+question:"Ma trận đối xứng thực có tính chất gì?",
+options:[
+"Không có giá trị riêng",
+"Vector riêng luôn trực giao",
+"Không khả nghịch",
+"Định thức luôn bằng 1"
+],
+correct:1,
+explanation:"Ma trận đối xứng thực có các vector riêng ứng với giá trị riêng khác nhau luôn trực giao.",
+tip:"Đối xứng ⇒ trực giao."
+},
+
+{
+type:"Lý thuyết",
+difficulty:"medium",
+question:"Ứng dụng nổi tiếng của vector riêng là:",
+options:[
+"PageRank của Google",
+"Sắp xếp nổi bọt",
+"Thuật toán Euclid",
+"Mã ASCII"
+],
+correct:0,
+explanation:"Google PageRank dùng vector riêng của ma trận liên kết web.",
+tip:"Google + đại số tuyến tính ⇒ PageRank."
+},
+
+/* =========================
+   5 CÂU DỄ
+========================= */
+
+{
+type:"Dễ",
+difficulty:"easy",
+question:"Cho \\(A=\\begin{pmatrix}2&0\\\\0&3\\end{pmatrix}\\). Giá trị riêng là:",
+options:[
+"2 và 3",
+"0 và 1",
+"5",
+"-2 và -3"
+],
+correct:0,
+explanation:"Ma trận chéo có giá trị riêng chính là các phần tử trên đường chéo.",
+tip:"Ma trận chéo ⇒ nhìn đường chéo chính."
+},
+
+{
+type:"Dễ",
+difficulty:"easy",
+question:"Cho \\(A=\\begin{pmatrix}4&0\\\\0&4\\end{pmatrix}\\). Giá trị riêng là:",
+options:[
+"4",
+"0",
+"8",
+"-4"
+],
+correct:0,
+explanation:"Ma trận là \\(4I\\), nên mọi vector đều bị nhân 4.",
+tip:"\\(kI\\) ⇒ giá trị riêng duy nhất là k."
+},
+
+{
+type:"Dễ",
+difficulty:"easy",
+question:"Cho \\(A=\\begin{pmatrix}1&0\\\\0&-1\\end{pmatrix}\\). Vector \\((1,0)\\) có giá trị riêng:",
+options:[
+"1",
+"-1",
+"0",
+"2"
+],
+correct:0,
+explanation:"Nhân vào được \\((1,0)\\), nên \\(\\lambda=1\\).",
+tip:"Nhân trực tiếp vào vector."
+},
+
+{
+type:"Dễ",
+difficulty:"easy",
+question:"Cho \\(A=\\begin{pmatrix}5&0\\\\0&2\\end{pmatrix}\\). Vector riêng ứng với \\(\\lambda=5\\) là:",
+options:[
+"\\((1,0)\\)",
+"\\((0,1)\\)",
+"\\((1,1)\\)",
+"\\((2,5)\\)"
+],
+correct:0,
+explanation:"Theo trục x, vector bị nhân 5.",
+tip:"Nhìn vị trí số 5 trên đường chéo."
+},
+
+{
+type:"Dễ",
+difficulty:"easy",
+question:"Nếu \\(A\\vec{v}=3\\vec{v}\\), thì giá trị riêng là:",
+options:[
+"\\(\\vec{v}\\)",
+"3",
+"A",
+"0"
+],
+correct:1,
+explanation:"Hệ số nhân trước vector là giá trị riêng.",
+tip:"Số đứng trước vector ⇒ eigenvalue."
+},
+
+/* =========================
+   5 CÂU TRUNG BÌNH
+========================= */
+
+{
+type:"Trung bình",
+difficulty:"medium",
+question:"Cho \\(A=\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}\\). Tổng các giá trị riêng là:",
+options:[
+"3",
+"4",
+"5",
+"6"
+],
+correct:1,
+explanation:"Tổng giá trị riêng bằng trace của ma trận: \\(2+2=4\\).",
+tip:"Tổng eigenvalue = trace."
+},
+
+{
+type:"Trung bình",
+difficulty:"medium",
+question:"Cho ma trận trên. Tích các giá trị riêng bằng:",
+options:[
+"1",
+"2",
+"3",
+"4"
+],
+correct:2,
+explanation:"Tích giá trị riêng bằng định thức: \\(2\\cdot2-1\\cdot1=3\\).",
+tip:"Tích eigenvalue = determinant."
+},
+
+{
+type:"Trung bình",
+difficulty:"medium",
+question:"Cho \\(A=\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}\\). Một vector riêng là:",
+options:[
+"\\((1,1)\\)",
+"\\((1,2)\\)",
+"\\((2,3)\\)",
+"\\((0,1)\\)"
+],
+correct:0,
+explanation:"\\(A(1,1)^T=(3,3)^T=3(1,1)^T\\).",
+tip:"Thử nhân nhanh bằng mắt."
+},
+
+{
+type:"Trung bình",
+difficulty:"medium",
+question:"Nếu \\(\\det(A)=0\\), thì:",
+options:[
+"A chắc chắn có giá trị riêng 0",
+"A luôn đối xứng",
+"A không có vector riêng",
+"A khả nghịch"
+],
+correct:0,
+explanation:"Định thức bằng tích các giá trị riêng.",
+tip:"Det = 0 ⇒ có eigenvalue bằng 0."
+},
+
+{
+type:"Trung bình",
+difficulty:"medium",
+question:"Cho \\(A=\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}\\). Ma trận này biểu diễn:",
+options:[
+"Kéo dãn",
+"Phản xạ",
+"Xoay 90 độ",
+"Nén"
+],
+correct:2,
+explanation:"Đây là ma trận quay 90 độ.",
+tip:"Dạng xoay chuẩn trong 2D."
+},
+
+/* =========================
+   5 CÂU KHÓ
+========================= */
+
+{
+type:"Khó",
+difficulty:"hard",
+question:"Cho \\(A=\\begin{pmatrix}3&1\\\\0&2\\end{pmatrix}\\). Giá trị riêng là:",
+options:[
+"1 và 2",
+"2 và 3",
+"3 và 4",
+"1 và 3"
+],
+correct:1,
+explanation:"Ma trận tam giác ⇒ eigenvalue là phần tử trên đường chéo.",
+tip:"Tam giác ⇒ nhìn đường chéo."
+},
+
+{
+type:"Khó",
+difficulty:"hard",
+question:"Cho \\(A=\\begin{pmatrix}1&2\\\\2&1\\end{pmatrix}\\). Một giá trị riêng là:",
+options:[
+"3",
+"2",
+"1",
+"0"
+],
+correct:0,
+explanation:"\\(\\det(A-\\lambda I)=\\lambda^2-2\\lambda-3=(\\lambda-3)(\\lambda+1)\\).",
+tip:"Tổng ngoài đường chéo lớn ⇒ eigenvalue lớn."
+},
+
+{
+type:"Khó",
+difficulty:"hard",
+question:"Nếu một ma trận có hai giá trị riêng khác nhau thì:",
+options:[
+"Không khả nghịch",
+"Có hai vector riêng độc lập tuyến tính",
+"Không có định thức",
+"Không chéo hóa được"
+],
+correct:1,
+explanation:"Eigenvalue khác nhau ⇒ eigenvector độc lập tuyến tính.",
+tip:"Khác eigenvalue ⇒ độc lập."
+},
+
+{
+type:"Khó",
+difficulty:"hard",
+question:"Cho \\(A=\\begin{pmatrix}2&0\\\\0&-2\\end{pmatrix}\\). Sau biến đổi, hình tròn trở thành:",
+options:[
+"Hình vuông",
+"Elip",
+"Đường thẳng",
+"Hyperbol"
+],
+correct:1,
+explanation:"Các trục bị kéo dãn khác nhau ⇒ hình tròn thành elip.",
+tip:"Kéo khác nhau theo từng trục ⇒ elip."
+},
+
+{
+type:"Khó",
+difficulty:"hard",
+question:"Trong PCA, vector riêng lớn nhất biểu diễn:",
+options:[
+"Nhiễu dữ liệu",
+"Hướng phương sai lớn nhất",
+"Giá trị trung bình",
+"Sai số nhỏ nhất"
+],
+correct:1,
+explanation:"PCA chọn eigenvector có eigenvalue lớn nhất để giữ nhiều thông tin nhất.",
+tip:"Eigenvalue lớn ⇒ nhiều thông tin."
+}
+
+];
+
+let score = 0;
+
+function renderQuiz(){
+
+  const quiz = document.getElementById("quiz");
+  quiz.innerHTML = "";
+
+  questions.forEach((q,index)=>{
+
+    const div = document.createElement("div");
+    div.className = "question";
+
+    div.innerHTML = `
+      <div class="difficulty ${q.difficulty}">
+        ${q.type} - ${q.difficulty.toUpperCase()}
+      </div>
+
+      <h3>Câu ${index+1}: ${q.question}</h3>
+
+      <div class="options">
+        ${q.options.map((opt,i)=>
+          `<div class="option" onclick="checkAnswer(this,${index},${i})">
+            ${String.fromCharCode(65+i)}. ${opt}
+          </div>`
+        ).join("")}
+      </div>
+
+      <div class="explanation" id="exp-${index}">
+        <b>Đáp án đúng:</b> ${String.fromCharCode(65+q.correct)}<br><br>
+        <b>Giải thích:</b> ${q.explanation}
+
+        <div class="tip">
+          <b>Mẹo làm nhanh:</b> ${q.tip}
+        </div>
+      </div>
+    `;
+
+    quiz.appendChild(div);
+  });
+
+  MathJax.typeset();
+}
+
+function checkAnswer(element,qIndex,selected){
+
+  const q = questions[qIndex];
+  const parent = element.parentElement;
+
+  if(parent.classList.contains("done")) return;
+
+  parent.classList.add("done");
+
+  const options = parent.querySelectorAll(".option");
+
+  options.forEach((opt,i)=>{
+
+    if(i===q.correct){
+      opt.classList.add("correct");
+    }
+
+    if(i===selected && selected!==q.correct){
+      opt.classList.add("wrong");
+    }
+  });
+
+  if(selected===q.correct){
+    score++;
+    document.getElementById("score").innerText = score;
+  }
+
+  document.getElementById(`exp-${qIndex}`).style.display="block";
+
+  MathJax.typeset();
+}
+
+function resetQuiz(){
+  score = 0;
+  document.getElementById("score").innerText = score;
+  renderQuiz();
+}
+
+renderQuiz();
+
+</script>
+
+</body>
+</html>
