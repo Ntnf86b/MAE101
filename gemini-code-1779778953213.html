@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đề thi Trắc nghiệm Tương tác: G7. Các phương pháp tính giới hạn</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --success-color: #27ae60;
+            --error-color: #c0392b;
+            --bg-color: #ecf0f1;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2980b9;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .btn-download {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 30px auto;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-download:hover {
+            background-color: #3498db;
+        }
+
+        .question-card {
+            border: 1px solid #dcdde1;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            background-color: #fbc53110;
+        }
+
+        .question-meta {
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #718093;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option-item {
+            background: white;
+            border: 2px solid #dcdde1;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 15px;
+        }
+
+        .option-item:hover {
+            border-color: #2980b9;
+            background-color: #f5f6fa;
+        }
+
+        /* Hiệu ứng khi bấm đáp án */
+        .option-item.correct {
+            background-color: #d4edda !important;
+            border-color: var(--success-color) !important;
+            color: #155724;
+            font-weight: bold;
+        }
+
+        .option-item.wrong {
+            background-color: #f8d7da !important;
+            border-color: var(--error-color) !important;
+            color: #721c24;
+        }
+
+        .disabled {
+            pointer-events: none;
+        }
+
+        .explanation-box {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #dff9fb;
+            border-left: 5px solid #0097e6;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tip-box {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #fff2cc;
+            border-left: 5px solid #f1c40f;
+            font-size: 14px;
+            color: #7d6608;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-summary {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #dcdde1;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ỨNG DỤNG TRẮC NGHIỆM GIỚI HẠN (G7)</h1>
+    <div class="subtitle">Môn học: Toán kỹ sư (MAE101) - 20 Câu Hỏi Tương Tác</div>
+    
+    <button class="btn-download" onclick="downloadQuizFile()">📥 Tải tệp HTML đề thi này về máy</button>
+
+    <div id="quiz-container"></div>
+
+    <div class="score-summary" id="score-box">
+        Tiến trình hoàn thành: <span id="progress-count">0</span> / 20 câu.
+    </div>
+</div>
+
+<script>
+// Khởi tạo ngân hàng dữ liệu 20 câu hỏi chuẩn cấu trúc yêu cầu
+const quizData = [
+    // === LÝ THUYẾT (5 CÂU) ===
+    {
+        type: "Lý thuyết", level: "Cơ bản",
+        question: "Trong các dạng giới hạn sau đây, dạng nào KHÔNG phải là một dạng vô định?",
+        options: ["$\\frac{0}{\\infty}$", "$\\frac{0}{0}$", "$\\frac{\\infty}{\\infty}$", "$1^\\infty$"],
+        correct: 0,
+        explanation: "Các dạng vô định bao gồm $\\frac{0}{0}$, $\\frac{\\infty}{\\infty}$, $0 \\cdot \\infty$, $\\infty - \\infty$, $1^\\infty$, $0^0$, $\\infty^0$. Còn dạng $\\frac{0}{\\infty}$ có giới hạn trực tiếp bằng $0$, không phải vô định.",
+        tip: "Nhớ nhanh: Tử số tiến về 0, mẫu số tiến về vô cùng (rất lớn) thì phân số đó chắc chắn bằng 0 ngay lập tức."
+    },
+    {
+        type: "Lý thuyết", level: "Cơ bản",
+        question: "Khi phát biểu về Quy tắc L'Hôpital để tính giới hạn, quy tắc này áp dụng trực tiếp cho các dạng vô định nào?",
+        options: ["$\\frac{0}{0}$ và $\\frac{\\infty}{\\infty}$", "$0 \\cdot \\infty$ và $\\infty - \\infty$", "$1^\\infty$ và $0^0$", "Mọi dạng giới hạn"],
+        correct: 0,
+        explanation: "Quy tắc L'Hôpital chỉ được áp dụng trực tiếp khi giới hạn của thương số có dạng vô định $\\frac{0}{0}$ hoặc $\\frac{\\infty}{\\infty}$. Các dạng vô định khác phải biến đổi đại số về hai dạng này trước khi đạo hàm.",
+        tip: "Nếu gặp dạng tích $0 \\cdot \\infty$, hãy nghịch đảo một hàm số xuống mẫu số để đưa về dạng $\\frac{0}{0}$ hoặc $\\frac{\\infty}{\\infty}$ rồi mới dùng L'Hôpital."
+    },
+    {
+        type: "Lý thuyết", level: "Trung bình",
+        question: "Khi $x \\to 0$, cặp hàm số nào sau đây KHÔNG phải là hai vô cùng bé tương đương?",
+        options: ["$\\cos(x)$ và $1$", "$\\sin(x)$ và $x$", "$\\ln(1+x)$ và $x$", "$e^x - 1$ và $x$"],
+        correct: 0,
+        explanation: "Khi $x \\to 0$, ta có $\\sin x \\sim x$, $\\ln(1+x) \\sim x$, và $e^x - 1 \\sim x$ vì giới hạn tỉ số của chúng bằng 1. Đối với $\\cos x$, khi $x \\to 0$ thì $\\cos x \\to 1$, nhưng hiệu $(1 - \\cos x) \\sim \\frac{x^2}{2}$, bản thân $\\cos x$ và $1$ không tạo thành cặp tương đương dạng vô cùng bé.",
+        tip: "Nhớ các hệ thức tương đương cốt lõi khi $x \\to 0$: $\\sin x \\sim \\tan x \\sim \\arcsin x \\sim \\arctan x \\sim e^x - 1 \\sim \\ln(1+x) \\sim x$."
+    },
+    {
+        type: "Lý thuyết", level: "Trung bình",
+        question: "Giả sử $\\lim_{x \\to x_0} f(x) = 1$ và $\\lim_{x \\to x_0} g(x) = \\infty$. Để tính giới hạn dạng $1^\\infty$ của biểu thức $A = \\lim_{x \\to x_0} [f(x)]^{g(x)}$, công thức chuyển đổi nhanh sang cơ số $e$ nào sau đây là đúng?",
+        options: [
+            "$A = e^{\\lim_{x \\to x_0} [f(x) - 1] \\cdot g(x)}$",
+            "$A = e^{\\lim_{x \\to x_0} f(x) \\cdot g(x)}$",
+            "$A = \\lim_{x \\to x_0} e^{f(x) - g(x)}$",
+            "$A = e^{\\lim_{x \\to x_0} \\frac{f(x)-1}{g(x)}}$"
+        ],
+        correct: 0,
+        explanation: "Đây là hệ quả từ giới hạn cơ bản của số $e$. Ta có $[f(x)]^{g(x)} = [1 + (f(x)-1)]^{g(x)} = \\{[1 + (f(x)-1)]^{\\frac{1}{f(x)-1}}\\}^{[f(x)-1]g(x)}$. Khi $x \\to x_0$, biểu thức trong dấu ngoặc nhọn tiến tới $e$, do đó giới hạn bằng $e^{\\lim [f(x)-1]g(x)}$.",
+        tip: "Mẹo làm nhanh các bài mũ bậc cao dạng $1^\\infty$: Lấy (Cơ số - 1) nhân với (Số mũ), tính giới hạn của cụm đó rồi đặt trên mũ của $e$."
+    },
+    {
+        type: "Lý thuyết", level: "Trung bình",
+        question: "Phương pháp nhân lượng liên hợp (Rationalization) thường được áp dụng ưu tiên cho các dạng bài giới hạn nào?",
+        options: [
+            "Giới hạn chứa căn thức dạng vô định $\\frac{0}{0}$ hoặc $\\infty - \\infty$",
+            "Giới hạn của các hàm đa thức nguyên khi $x \\to \\infty$",
+            "Giới hạn chứa hàm mũ phức tạp $a^x$",
+            "Giới hạn của các hàm lượng giác tuần hoàn tại vô cực"
+        ],
+        correct: 0,
+        explanation: "Nhân lượng liên hợp là kỹ thuật sử dụng hằng đẳng thức để trục căn thức ra khỏi tử hoặc mẫu, nhằm xuất hiện nhân tử chung để triệt tiêu (đối với dạng $\\frac{0}{0}$) hoặc đưa về dạng phân thức hữu tỉ (đối với dạng $\\infty - \\infty$).",
+        tip: "Nhớ công thức liên hợp bậc 2: $\\sqrt{A} - B = \\frac{A - B^2}{\\sqrt{A} + B}$ và bậc 3: $\\sqrt[3]{A} - B = \\frac{A - B^3}{\\sqrt[3]{A^2} + B\\sqrt[3]{A} + B^2}$."
+    },
+
+    // === BÀI TẬP DỄ (5 CÂU) ===
+    {
+        type: "Bài tập", level: "Dễ",
+        question: "Tính giới hạn sau: $\\lim_{x \\to 3} \\frac{x^2 - 9}{x - 3}$",
+        options: ["6", "3", "0", "Giới hạn không tồn tại"],
+        correct: 0,
+        explanation: "Thay trực tiếp $x = 3$ thấy có dạng $\\frac{0}{0}$. Phân tích tử số thành nhân tử: $x^2 - 9 = (x - 3)(x + 3)$. Triệt tiêu $(x - 3)$ ta còn $\\lim_{x \\to 3} (x + 3) = 3 + 3 = 6$.",
+        tip: "Mẹo bấm máy: Nhập `(X^2 - 9)/(X - 3)` và ấn nút `CALC` tại $X = 3.00001$. Kết quả hiển thị xấp xỉ 6."
+    },
+    {
+        type: "Bài tập", level: "Dễ",
+        question: "Tính giới hạn tại vô cực của hàm phân thức hữu tỉ: $\\lim_{x \\to +\\infty} \\frac{4x^3 - 2x + 5}{2x^3 + x^2 - 1}$",
+        options: ["2", "4", "0", "$+\\infty$"],
+        correct: 0,
+        explanation: "Khi $x \\to \\infty$, ta chia cả tử và mẫu cho $x^3$ (bậc cao nhất). Giới hạn sẽ bằng tỉ số của hai hệ số cao nhất: $\\frac{4}{2} = 2$.",
+        tip: "Mẹo trắc nghiệm nhanh: Nếu bậc của tử bằng bậc của mẫu, kết quả chính là (Hệ số bậc cao nhất của tử) / (Hệ số bậc cao nhất của mẫu)."
+    },
+    {
+        type: "Bài tập", level: "Dễ",
+        question: "Tính giới hạn lượng giác cơ bản: $\\lim_{x \\to 0} \\frac{\\sin(5x)}{3x}$",
+        options: ["$\\frac{5}{3}$", "$\\frac{3}{5}$", "1", "0"],
+        correct: 0,
+        explanation: "Áp dụng giới hạn kinh điển $\\lim_{u \\to 0} \\frac{\\sin u}{u} = 1$. Ta có $\\frac{\\sin(5x)}{3x} = \\frac{\\sin(5x)}{5x} \\cdot \\frac{5}{3} \\to 1 \\cdot \\frac{5}{3} = \\frac{5}{3}$.",
+        tip: "Mẹo vô cùng bé: Khi $x \\to 0$, thay thẳng $\\sin(5x)$ bằng $5x$. Khi đó biểu thức thành $\\frac{5x}{3x} = \\frac{5}{3}$."
+    },
+    {
+        type: "Bài tập", level: "Dễ",
+        question: "Tìm giới hạn một phía sau: $\\lim_{x \\to 2^-} \\frac{x + 1}{x - 2}$",
+        options: ["$-\\infty$", "$+\\infty$", "0", "3"],
+        correct: 0,
+        explanation: "Khi $x \\to 2^-$, tử số tiến tới $2 + 1 = 3 > 0$. Mẫu số $x - 2$ tiến tới $0$ nhưng luôn âm (vì $x < 2$). Một số dương chia cho một số âm vô cùng nhỏ sẽ kết quả ra $-\\infty$.",
+        tip: "Bấm máy kiểm tra: Nhập biểu thức và bấm `CALC` tại $X = 1.9999$. Máy sẽ trả ra một số âm rất lớn, chứng tỏ đáp án là $-\\infty$."
+    },
+    {
+        type: "Bài tập", level: "Dễ",
+        question: "Tính giới hạn sử dụng đạo hàm trực tiếp (L'Hôpital): $\\lim_{x \\to 0} \\frac{e^{2x} - 1}{x}$",
+        options: ["2", "1", "0", "$e$"],
+        correct: 0,
+        explanation: "Giới hạn có dạng $\\frac{0}{0}$. Đạo hàm tử số ra $2e^{2x}$, đạo hàm mẫu số ra $1$. Thế $x = 0$ vào biểu thức mới: $\\frac{2e^0}{1} = 2$.",
+        tip: "Thay thế tương đương: Khi $x \\to 0$, $e^{2x} - 1 \\sim 2x$. Do đó $\\frac{2x}{x} = 2$."
+    },
+
+    // === BÀI TẬP TRUNG BÌNH (5 CÂU) ===
+    {
+        type: "Bài tập", level: "Trung bình",
+        question: "Tính giới hạn bằng phương pháp lượng liên hợp: $\\lim_{x \\to 0} \\frac{\\sqrt{x + 4} - 2}{x}$",
+        options: ["$\\frac{1}{4}$", "$\\frac{1}{2}$", "0", "Giới hạn không tồn tại hữu hạn"],
+        correct: 0,
+        explanation: "Nhân tử và mẫu với lượng liên hợp $(\\sqrt{x+4} + 2)$, tử số thành $(x+4) - 4 = x$. Triệt tiêu $x$ ở tử và mẫu, ta còn $\\lim_{x \\to 0} \\frac{1}{\\sqrt{x+4}+2} = \\frac{1}{2+2} = \\frac{1}{4}$.",
+        tip: "Dùng L'Hôpital đạo hàm cho nhanh: Tử đạo hàm thành $\\frac{1}{2\\sqrt{x+4}}$, mẫu đạo hàm thành $1$. Thế $x=0$ được $\\frac{1}{2\\sqrt{4}} = \\frac{1}{4}$."
+    },
+    {
+        type: "Bài tập", level: "Trung bình",
+        question: "Tính giới hạn tại vô cực chứa căn thức: $\\lim_{x \\to +\\infty} (\\sqrt{x^2 + 3x} - x)$",
+        options: ["$\\frac{3}{2}$", "3", "0", "$+\\infty$"],
+        correct: 0,
+        explanation: "Dạng $\\infty - \\infty$. Nhân liên hợp: $\\frac{(x^2+3x) - x^2}{\\sqrt{x^2+3x}+x} = \\frac{3x}{x(\\sqrt{1+3/x}+1)} = \\frac{3}{\\sqrt{1}+1} = \\frac{3}{2}$.",
+        tip: "Mẹo thêm bớt hằng số: $\\sqrt{x^2+3x}$ khi $x$ rất lớn gần bằng $\\sqrt{x^2+3x + 2.25} = x + 1.5$. Thay vào đề: $(x+1.5) - x = 1.5 = \\frac{3}{2}$."
+    },
+    {
+        type: "Bài tập", level: "Trung bình",
+        question: "Tính giới hạn sau: $\\lim_{x \\to 1} \\frac{x^5 - 1}{x^3 - 1}$",
+        options: ["$\\frac{5}{3}$", "1", "$\\frac{3}{5}$", "0"],
+        correct: 0,
+        explanation: "Áp dụng L'Hôpital cho dạng $\\frac{0}{0}$: Đạo hàm tử số ra $5x^4$, mẫu số ra $3x^2$. Thay $x=1$ vào thương đạo hàm ta được $\\frac{5(1)^4}{3(1)^2} = \\frac{5}{3}$.",
+        tip: "Công thức tổng quát trắc nghiệm: $\\lim_{x \\to 1} \\frac{x^m - 1}{x^n - 1} = \\frac{m}{n}$. Áp dụng trực tiếp với $m=5, n=3 \\Rightarrow \\frac{5}{3}$."
+    },
+    {
+        type: "Bài tập", level: "Trung bình",
+        question: "Tính giới hạn lượng giác nâng cao bằng L'Hôpital: $\\lim_{x \\to 0} \\frac{1 - \\cos(4x)}{x^2}$",
+        options: ["8", "4", "2", "0"],
+        correct: 0,
+        explanation: "Dạng $\\frac{0}{0}$. Dùng L'Hôpital lần 1: $\\lim \\frac{4\\sin(4x)}{2x}$. Vẫn dạng $\\frac{0}{0}$, dùng L'Hôpital lần 2: $\\lim \\frac{16\\cos(4x)}{2}$. Thế $x=0$ ra $\\frac{16}{2} = 8$.",
+        tip: "Mẹo vô cùng bé: Khi $x \\to 0$, $1 - \\cos(u) \\sim \\frac{u^2}{2}$. Vậy $1 - \\cos(4x) \\sim \\frac{(4x)^2}{2} = 8x^2$. Thay vào biểu thức: $\\frac{8x^2}{x^2} = 8$."
+    },
+    {
+        type: "Bài tập", level: "Trung bình",
+        question: "Tính giới hạn sau: $\\lim_{x \\to 0} \\frac{\\ln(1 + 3x)}{\\tan(2x)}$",
+        options: ["$\\frac{3}{2}$", "$\\frac{2}{3}$", "1", "0"],
+        correct: 0,
+        explanation: "Khi $x \\to 0$, theo lý thuyết vô cùng bé tương đương: $\\ln(1+3x) \\sim 3x$ và $\\tan(2x) \\sim 2x$. Do đó giới hạn tương đương với $\\lim_{x \\to 0} \\frac{3x}{2x} = \\frac{3}{2}$.",
+        tip: "Thay vì làm tự luận dài dòng, cứ giữ lại hệ số đứng trước $x$ của các hàm lượng giác và logarit: $\\frac{3}{2}$."
+    },
+
+    // === BÀI TẬP KHÓ (5 CÂU) ===
+    {
+        type: "Bài tập", level: "Khó",
+        question: "Tính giới hạn mũ phức tạp dạng $1^\\infty$: $\\lim_{x \\to 0} (1 + x^2)^{\\frac{1}{1 - \\cos(x)}}$",
+        options: ["$e^2$", "$e$", "$e^4$", "1"],
+        correct: 0,
+        explanation: "Áp dụng công thức tính nhanh cho dạng $1^\\infty$: Giới hạn bằng $e^L$ với $L = \\lim_{x \\to 0} [f(x)-1]g(x) = \\lim_{x \\to 0} \\frac{x^2}{1 - \\cos x}$. Mà khi $x \\to 0$, $1 - \\cos x \\sim \\frac{x^2}{2}$. Do đó $L = \\lim \\frac{x^2}{x^2/2} = 2$. Vậy kết quả là $e^2$.",
+        tip: "Bấm máy giải nguy: Nhập `(1 + X^2)^(1/(1 - cos(X)))` nhớ để máy ở chế độ Radian. Bấm `CALC` tại $X=0.0001$. Xem kết quả xấp xỉ $7.389$, tương ứng với số $e^2$."
+    },
+    {
+        type: "Bài tập", level: "Khó",
+        question: "Tính giới hạn sau bằng quy tắc L'Hôpital hoặc khai triển: $\\lim_{x \\to 0} \\frac{x - \\sin(x)}{x^3}$",
+        options: ["$\\frac{1}{6}$", "0", "$\\frac{1}{3}$", "Giới hạn không tồn tại hữu hạn"],
+        correct: 0,
+        explanation: "Dạng $\\frac{0}{0}$. L'Hôpital lần 1: $\\frac{1 - \\cos x}{3x^2}$. L'Hôpital lần 2: $\\frac{\\sin x}{6x}$. L'Hôpital lần 3: $\\frac{\\cos x}{6}$. Khi $x=0$, kết quả là $\\frac{1}{6}$.",
+        tip: "Đây là bài toán kinh điển kiểm tra số hạng bậc thấp của khai triển Taylor hàm $\\sin x = x - \\frac{x^3}{6} + \\dots$ Nhớ luôn kết quả giới hạn này bằng $\\frac{1}{6}$ để làm các bài toán tổ hợp khác."
+    },
+    {
+        type: "Bài tập", level: "Khó",
+        question: "Tìm giới hạn của hàm số sau khi $x$ tiến tới dương vô cực: $\\lim_{x \\to +\\infty} x \\left[ \\ln(x + 2) - \\ln(x) \\right]$",
+        options: ["2", "1", "0", "$+\\infty$"],
+        correct: 0,
+        explanation: "Biến đổi hiệu logarit thành logarit của thương: $\\ln(x+2) - \\ln(x) = \\ln\\left(\\frac{x+2}{x}\\right) = \\ln\\left(1 + \\frac{2}{x}\\right)$. Biểu thức trở thành $\\lim_{x \\to +\\infty} x \\cdot \\ln\\left(1 + \\frac{2}{x}\\right)$. Đặt $t = \\frac{2}{x} \\to 0$, biểu thức viết lại thành $\\lim_{t \\to 0} \\frac{2}{t} \\ln(1+t) = 2 \\cdot 1 = 2$.",
+        tip: "Khi $x \\to \\infty$, $\\ln(1 + \\frac{2}{x}) \\sim \\frac{2}{x}$. Nhân thêm đại lượng $x$ ở ngoài ta được $x \\cdot \\frac{2}{x} = 2$."
+    },
+    {
+        type: "Bài tập", level: "Khó",
+        question: "Xác định giá trị của tham số $a$ để giới hạn sau tồn tại hữu hạn: $\\lim_{x \\to 0} \\frac{e^{ax} - x - 1}{x^2}$",
+        options: ["$a = 1$", "$a = 0$", "$a = 2$", "Mọi giá trị của $a$ đều thỏa mãn"],
+        correct: 0,
+        explanation: "Áp dụng L'Hôpital lần 1 cho dạng $\\frac{0}{0}$ ta được $\\lim_{x \\to 0} \\frac{a\cdot e^{ax} - 1}{2x}$. Để giới hạn này có thể tiếp tục tính toán hữu hạn (không bị phân kỳ về vô cực do mẫu bằng 0), tử số bắt buộc phải bằng 0 tại $x=0$. Tức là $a\\cdot e^0 - 1 = 0 \\Rightarrow a = 1$. Khi $a=1$, L'Hôpital lần 2 ra kết quả giới hạn bằng $\\frac{1}{2}$.",
+        tip: "Hàm số muốn khử được vô định bậc 2 ở mẫu số thì đạo hàm bậc 1 của tử tại điểm đó phải triệt tiêu về số 0."
+    },
+    {
+        type: "Bài tập", level: "Khó",
+        question: "Tính giới hạn sau bằng cách chuyển đổi dạng vô định $0 \\cdot \\infty$: $\\lim_{x \\to 0^+} (x^2 \\cdot \\ln x)$",
+        options: ["0", "$-\\infty$", "1", "Giới hạn không tồn tại"],
+        correct: 0,
+        explanation: "Biến đổi biểu thức về dạng thương: $\\frac{\\ln x}{1/x^2}$ để đưa về dạng $\\frac{\\infty}{\\infty}$. Áp dụng L'Hôpital: Đạo hàm tử số ra $\\frac{1}{x}$, đạo hàm mẫu số ra $-\\frac{2}{x^3}$. Rút gọn biểu thức thương ta được $\\lim_{x \\to 0^+} \\frac{1/x}{-2/x^3} = \\lim_{x \\to 0^+} \\frac{x^3}{-2x} = \\lim_{x \\to 0^+} \\frac{x^2}{-2} = 0$.",
+        tip: "Đối với các giới hạn dạng câu hỏi tăng trưởng, hàm đa thức $x^n$ luôn thắng (tăng trưởng/giảm mạnh hơn) hàm logarit $\\ln x$ khi tiến về điểm nhạy cảm, kéo biểu thức về số 0."
+    }
+];
+
+// Hàm hiển thị danh sách câu hỏi ra cây thư mục DOM
+function renderQuiz() {
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = '';
+
+    quizData.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `q-card-${index}`;
+
+        card.innerHTML = `
+            <div class="question-meta">Câu ${index + 1} - [${q.type} | Mức độ: ${q.level}]</div>
+            <div class="question-text">${q.question}</div>
+            <ul class="options-list" id="options-${index}">
+                ${q.options.map((opt, optIdx) => `
+                    <li class="option-item" onclick="handleSelectOption(${index}, ${optIdx})">${opt}</li>
+                `).join('')}
+            </ul>
+            <div class="explanation-box" id="explain-${index}">
+                <strong>✅ Đáp án đúng:</strong> ${q.options[q.correct]}<br><br>
+                <strong>📝 Lời giải chi tiết:</strong> ${q.explanation}
+                <div class="tip-box"><strong>🚀 Mẹo thi trắc nghiệm:</strong> ${q.tip}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    // Gọi MathJax render lại toán học sau khi thêm mã vào DOM
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+    }
+}
+
+// Lưu trữ các câu hỏi đã chọn phương án
+const userHistory = new Set();
+
+// Xử lý sự kiện chọn đáp án
+function handleSelectOption(qIdx, selectedIdx) {
+    if (userHistory.has(qIdx)) return; // Tránh bấm lại
+    userHistory.add(qIdx);
+
+    const optionsUl = document.getElementById(`options-${qIdx}`);
+    const items = optionsUl.getElementsByTagName('li');
+    const correctIdx = quizData[qIdx].correct;
+
+    // Đổi màu hiển thị trực quan
+    if (selectedIdx === correctIdx) {
+        items[selectedIdx].classList.add('correct');
+    } else {
+        items[selectedIdx].classList.add('wrong');
+        items[correctIdx].classList.add('correct');
+    }
+
+    // Khóa click
+    optionsUl.classList.add('disabled');
+
+    // Hiển thị khung lời giải
+    document.getElementById(`explain-${qIdx}`).style.display = 'block';
+
+    // Cập nhật thanh tiến trình
+    document.getElementById('progress-count').innerText = userHistory.size;
+}
+
+// Hàm tải tệp tin HTML nguồn hiện tại về máy tính người dùng
+function downloadQuizFile() {
+    const entireHtml = document.documentElement.outerHTML;
+    const blob = new Blob([entireHtml], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.href = url;
+    downloadAnchor.download = 'De_thi_trac_nghiem_tuong_tac_G7_Gioi_Han.html';
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    document.body.removeChild(downloadAnchor);
+    URL.revokeObjectURL(url);
+}
+
+// Chạy ứng dụng khi tải xong trang
+window.onload = renderQuiz;
+</script>
+
+</body>
+</html>
